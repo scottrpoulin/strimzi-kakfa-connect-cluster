@@ -1,0 +1,64 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  name: {{ .Values.kafkaConnect.Name | quote }}
+  annotations:
+    strimzi.io/use-connector-resources: "true"
+  labels:
+    aadpodidbinding: app
+spec:
+  bootstrapServers: {{ .Values.kafkaConnect.bootStrapServer }}
+  version: {{ .Values.kafkaConnect.Version }}
+  replicas: 1
+  image: {{ .Values.kafkaConnect.Image | quote }}
+  logging:
+    type: inline
+  tls:
+    trustedCertificates:
+      - secretName: caroot
+        certificate: caroot.pem
+  authentication:
+    type: tls
+    certificateAndKey:
+      certificate: tls.cert
+      key: tls.key
+      secretName: kafka-pem-info
+  config:
+    group.id: {{ .Values.kafkaConnect.groupID | quote }}
+    topic.create.enable: false
+    offset.storage.topic: {{ .Values.kafkaConnect.offsetStorageTopic | quote }}
+    config.storage.topic: {{ .Values.kafkaConnect.configStorageTopic | quote }}
+    status.storage.topic: {{ .Values.kafkaConnect.statusStorageTopic | quote }}
+    partition.assignment.strategy: org.apache.kafka.clients.consumer.RoundRobinAssignor
+    key.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+    value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+    connector.client.config.override.policy: All
+    consumer.max.poll.interval.ms: 90000
+    consumer.max.poll.records: 5
+    schema.registry.url: {{ .Values.kafkaConnect.schemaRegistryUrl | quote }}
+    header.converter: org.apache.kafka.connect.converters.ByteArrayConverter
+    key.converter: com.snowflake.kafka.connector.records.SnowflakeAvroConverter
+    key.converter.schema.registry.url: {{ .Values.kafkaConnect.converterSchemaRegistryUrl | quote }}
+    key.converter.schema.registry.ssl.truststore.location: {{ .Values.kafkaConnect.trustStore.location | quote }}
+    key.converter.schema.registry.ssl.truststore.password: {{ .Values.kafkaConnect.trustStore.password | quote }}
+    key.converter.schema.registry.ssl.keystore.location: {{ .Values.kafkaConnect.keyStore.location | quote }}
+    key.converter.schema.registry.ssl.keystore.password: {{ .Values.kafkaConnect.keyStore.password | quote }}
+    value.converter: com.snowflake.kafka.connector.records.SnowflakeAvroConverter
+    value.converter.schema.registry.url: {{ .Values.kafkaConnect.converterSchemaRegistryUrl | quote }}
+    value.converter.schema.registry.ssl.truststore.location: {{ .Values.kafkaConnect.trustStore.location | quote }}
+    value.converter.schema.registry.ssl.truststore.password: {{ .Values.kafkaConnect.trustStore.password | quote }}
+    value.converter.schema.registry.ssl.keystore.location: {{ .Values.kafkaConnect.keyStore.location | quote }}
+    value.converter.schema.registry.ssl.keystore.password: {{ .Values.kafkaConnect.keyStore.password | quote }}
+  externalConfiguration:
+    volumes:
+      - name: connector-secret-config
+        secret:
+          secretName: kafka-certificates
+  template:
+    deployment:
+      deploymentStrategy: Recreate
+    pod:
+      securityContext:
+        runAsUser: 1001
+        runAsNonRoot: true
+

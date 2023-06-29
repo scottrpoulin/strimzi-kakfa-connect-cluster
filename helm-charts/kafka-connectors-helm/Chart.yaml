@@ -1,0 +1,6 @@
+apiVersion: v2
+name: kafka-connector
+description: A helm chart to deploy kafka connector profiles
+type: application
+version: 0.2.3
+appVersion: "1.16.0"

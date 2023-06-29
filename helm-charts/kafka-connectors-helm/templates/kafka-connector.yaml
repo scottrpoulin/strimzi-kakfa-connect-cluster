@@ -1,0 +1,31 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: {{ .Values.kafkaConnect.Name }}
+  labels:
+    strimzi.io/cluster: {{ .Values.kafkaConnect.kafkaConnectCluster }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "1"
+spec:
+  class: com.snowflake.kafka.connector.SnowflakeSinkConnector
+  tasksMax: {{ .Values.kafkaConnect.spec.tasksMax }}
+  config:
+    topics: {{ .Values.kafkaConnect.spec.config.topics }}
+    snowflake.topic2table.map: {{ .Values.kafkaConnect.spec.config.snowflake.map }}
+    buffer.count.records: {{ .Values.kafkaConnect.spec.config.buffer.countRecords }}
+    buffer.flush.time: {{ .Values.kafkaConnect.spec.config.buffer.flushTime }}
+    buffer.size.bytes: {{ .Values.kafkaConnect.spec.config.buffer.sizeBytes }}
+    session.timeout.ms: {{ .Values.kafkaConnect.spec.config.sessions.timeoutMs }}
+    consumer.override.max.poll.interval.ms: {{ .Values.kafkaConnect.spec.config.consumer.override.pollIntervalMs }}
+    consumer.override.max.poll.records: {{ .Values.kafkaConnect.spec.config.consumer.override.pollRecords }}
+    consumer.max.poll.interval.ms: {{ .Values.kafkaConnect.spec.config.consumer.maxPollIntervalMs }}
+    consumer.max.poll.records: {{ .Values.kafkaConnect.spec.config.consumer.maxPollRecords }}
+    max.poll.interval.ms: {{ .Values.kafkaConnect.spec.config.maxPollIntervalMs }}
+    max.poll.records: {{ .Values.kafkaConnect.spec.config.maxPollRecords }}
+    snowflake.url.name: {{ .Values.kafkaConnect.spec.config.snowflake.urlName }}
+    snowflake.user.name: {{ .Values.kafkaConnect.spec.config.snowflake.userName }}
+    snowflake.private.key: {{ .Values.kafkaConnect.spec.config.snowflake.privateKey }}
+    snowflake.private.key.passphrase: {{ .Values.kafkaConnect.spec.config.snowflake.passphrase }}
+    snowflake.database.name: {{ .Values.kafkaConnect.spec.config.snowflake.databaseName }}
+    snowflake.schema.name: {{ .Values.kafkaConnect.spec.config.snowflake.schemaName }}

@@ -1,0 +1,29 @@
+# Default Values for kafka Connect
+# This is a YAML-formatted file
+# Declare variables to be passed into your templates
+
+replicaCount: 1
+kafkaConnect:
+  Name: changeme-cluster
+  Version: 3.1.0
+  ports:
+    - protocol: HTTPS
+      port: 443
+      targetPort: 443
+    - protocol: TCP
+      port: 16520
+      targetPort: 16520
+  Image: kafkaconnectimage:1.0.0
+  bootstrapServer: kafkaClusterServers
+  groupID: connect-changeme
+  offsetStorageTopic: storage.topic
+  configStorageTopic: config.topic
+  statusStorageTopic: status.topic
+  schemaRegistryUrl: https://schema-registry-url.com:443
+  converterSchemaRegistryUrl: https://schema-registry-url.com
+  trustStore:
+    location: /opt/kafka/external-configuration/connector-secret-config/kaas-truststore.jks
+    password: <omitted>
+  keyStore:
+    location: /opt/kafka/external-configuration/connector-secret-config/connect-keystore.jks
+    password: <omitted>
