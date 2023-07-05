@@ -1,4 +1,4 @@
-# strimizi-kakfa-connect-cluster
+# strimzi-kakfa-connect-cluster
 Collection of Code to Deploy Strimzi Kafka Connect Cluster
 
 # Architecture
